@@ -35,7 +35,7 @@ public class TicTacToe {
 
     }
 
-    public int getHigherOccupancy(){
+    protected int getHigherOccupancy(){
         int x = 0;
         int o = 0;
         for(int i = 0; i < this.fieldSize; i++){
@@ -49,7 +49,7 @@ public class TicTacToe {
         return -1;
     }
 
-    public boolean doTurn(int playerTurn, int x, int y){
+    protected boolean doTurn(int playerTurn, int x, int y){
         if((x < 0) || (y < 0)){
             return false;
         }
@@ -68,7 +68,7 @@ public class TicTacToe {
         return false;
     }
 
-    public boolean checkFull(){
+    protected boolean checkFull(){
         for(int i = 0; i < fieldSize; i++){
             if(this.board[i] < 0) return false;
         }
@@ -76,7 +76,7 @@ public class TicTacToe {
         return true;
     }
 
-    public boolean checkWinner(){
+    protected boolean checkWinner(){
         return (checkColumns() || checkRows() || checkDiagonals());
     }
 
@@ -145,7 +145,7 @@ public class TicTacToe {
         return false;
     }
 
-    public String rowToString(int row){
+    protected String rowToString(int row){
         if((row < 0) || (row >= this.size)){
             throw new IllegalArgumentException("This row doesn't exist.");
         }

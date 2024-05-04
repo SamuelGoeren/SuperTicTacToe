@@ -82,7 +82,7 @@ public class SuperTicTacToe {
         boolean validTurn = false;
         int x, y;
         while(!validTurn) {
-            System.out.printf("Player %c's turn on board %s\n", SYMBOLS[playerTurn + 1],
+            System.out.printf("Player %c's turn on board %s\n", playerIndexToSymbol(playerTurn),
                     intToCoords(currentActive));
             String input = scanner.nextLine();
             if(validateNumbers(input)){
@@ -142,7 +142,7 @@ public class SuperTicTacToe {
 
     private void checkFullGameWinner(){
         if(bgBoard.checkWinner()){
-            System.out.printf("Player %c won Super Tic-Tac-Toe!\n", SYMBOLS[playerTurn+1]);
+            System.out.printf("Player %c won Super Tic-Tac-Toe!\n", playerIndexToSymbol(playerTurn));
             running = false;
         }
 
@@ -191,6 +191,14 @@ public class SuperTicTacToe {
         }
 
         return true;
+    }
+
+    private char playerIndexToSymbol(int i){
+        if(i < 0 || i > 1){
+            throw new IllegalArgumentException("This is not a valid player.");
+        }
+
+        return SYMBOLS[i+1];
     }
 
     private String intToCoords(int c){
