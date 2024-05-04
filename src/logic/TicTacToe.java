@@ -18,7 +18,7 @@ public class TicTacToe {
 
     private boolean joever;
 
-    public TicTacToe(int size, boolean active){
+    public TicTacToe(int size){
         this.size = size;
         this.fieldSize = size * size;
         this.playerTurn = (int) Math.round(Math.random());
@@ -34,55 +34,6 @@ public class TicTacToe {
         }
 
     }
-/*/ONLY NEEDED FOR SINGLE TIC TAC TOE
-    public void playGame(){
-        boolean playing = true;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Type in coordinates back to back (e.g. 00 for top-left corner)");
-        this.printGame();
-        while(playing) {
-            boolean validTurn = false;
-            while(!validTurn) {
-                System.out.printf("Player %c's turn:\n", SYMBOLS[this.playerTurn + 1]);
-                String input = scanner.nextLine();
-                if(validateNumbers(input)){
-                    int x = input.charAt(0) - '0';
-                    int y = input.charAt(1) - '0';
-                    validTurn = doTurn(this.playerTurn, x, y);
-                }
-            }
-            this.printGame();
-            if(checkFull()){
-                playing = false;
-                if(!checkWinner()){
-                    System.out.println("Tie!");
-                }
-            }
-            if(checkWinner()){
-                System.out.printf("Player %c won!\n", SYMBOLS[this.playerTurn + 1]);
-                playing = false;
-            }
-
-            this.playerTurn ^= 1;
-        }
-
-        this.joever = true;
-
-    }
-
-    private static boolean validateNumbers(String input){
-        int length = input.length();
-        if(length != 2){
-            return false;
-        }
-
-        for(int i = 0; i < length; i++){
-            if((input.charAt(i) < '0') || (input.charAt(i) > '9')) return false;
-        }
-
-        return true;
-    }
-*/
 
     public int getHigherOccupancy(){
         int x = 0;
@@ -229,14 +180,6 @@ public class TicTacToe {
         return sb.toString();
     }
 
-    /*
-    public void printGame(){
-        if(this.active){
-            System.out.print(ACTIVE_COLOR);
-        }
-        System.out.print(this + RESET_COLOR);
-    }*/
-
     public void setJoever(boolean joever) {
         this.joever = joever;
     }
@@ -252,4 +195,61 @@ public class TicTacToe {
     public int getWinner() {
         return winner;
     }
+    /*/ONLY NEEDED FOR SINGLE TIC TAC TOE
+    public void playGame(){
+        boolean playing = true;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Type in coordinates back to back (e.g. 00 for top-left corner)");
+        this.printGame();
+        while(playing) {
+            boolean validTurn = false;
+            while(!validTurn) {
+                System.out.printf("Player %c's turn:\n", SYMBOLS[this.playerTurn + 1]);
+                String input = scanner.nextLine();
+                if(validateNumbers(input)){
+                    int x = input.charAt(0) - '0';
+                    int y = input.charAt(1) - '0';
+                    validTurn = doTurn(this.playerTurn, x, y);
+                }
+            }
+            this.printGame();
+            if(checkFull()){
+                playing = false;
+                if(!checkWinner()){
+                    System.out.println("Tie!");
+                }
+            }
+            if(checkWinner()){
+                System.out.printf("Player %c won!\n", SYMBOLS[this.playerTurn + 1]);
+                playing = false;
+            }
+
+            this.playerTurn ^= 1;
+        }
+
+        this.joever = true;
+
+    }
+
+    private static boolean validateNumbers(String input){
+        int length = input.length();
+        if(length != 2){
+            return false;
+        }
+
+        for(int i = 0; i < length; i++){
+            if((input.charAt(i) < '0') || (input.charAt(i) > '9')) return false;
+        }
+
+        return true;
+    }
+*/
+
+    /*
+    public void printGame(){
+        if(this.active){
+            System.out.print(ACTIVE_COLOR);
+        }
+        System.out.print(this + RESET_COLOR);
+    }*/
 }

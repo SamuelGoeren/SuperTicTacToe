@@ -8,134 +8,157 @@ import static logic.Globals.*;
 
 public class SuperTicTacToe {
 
-    private int size;
+    private final int size;
 
-    private int fieldSize;
+    private final int fieldSize;
 
     private int currentActive;
 
+    private int nextActive;
+
     private int playerTurn;
 
-    private Set<Integer> availableGames;
+    private final Set<Integer> availableGames;
 
-    private TicTacToe[] board;
+    private final TicTacToe[] board;
 
-    private TicTacToe bgBoard;
+    private final TicTacToe bgBoard;
+
+    private final Scanner scanner;
+
+    private boolean running;
 
     public SuperTicTacToe(int size){
         this.size = size;
-        this.fieldSize = size * size;
-        this.board = new TicTacToe[fieldSize];
-        this.playerTurn = (int) Math.round(Math.random());
-        this.availableGames = new HashSet<>();
-        this.bgBoard = new TicTacToe(this.size, false);
+        fieldSize = size * size;
+        board = new TicTacToe[fieldSize];
+        playerTurn = (int) Math.round(Math.random());
+        availableGames = new HashSet<>();
+        bgBoard = new TicTacToe(size);
+        scanner = new Scanner(System.in);
+        running = true;
 
+        initAvailableGames();
+        initBoard();
+    }
+
+    private void initAvailableGames(){
         for(int i = 0; i < fieldSize; i++){
-            this.availableGames.add(i);
+            availableGames.add(i);
         }
-
-        this.initBoard();
     }
 
     private void initBoard(){
         for(int i = 0; i < fieldSize; i++){
-            this.board[i] = new TicTacToe(this.size, false);
+            board[i] = new TicTacToe(size);
         }
-        int initialActive = (int) Math.floor(fieldSize * Math.random());
-        this.currentActive = initialActive;
+        currentActive = (int) Math.floor(fieldSize * Math.random());
     }
 
     public void playGame(){
-        System.out.println("Welcome to Super Tic-Tac-Toe!");
-        System.out.println("The game starts on the highlighted field " + intToCoords(this.currentActive));
-        this.printGame();
-        Scanner scanner = new Scanner(System.in);
-        boolean playing = true;
-        while(playing){
-            TicTacToe currentGame = this.board[currentActive];
-            boolean validTurn = false;
-            int nextActive = -1;
-            int x = -1;
-            int y = -1;
-            while(!validTurn) {
-                System.out.printf("Player %c's turn on board %s\n", SYMBOLS[this.playerTurn + 1],
-                        intToCoords(this.currentActive));
-                String input = scanner.nextLine();
-                if(validateNumbers(input)){
-                    x = input.charAt(0) - '0';
-                    y = input.charAt(1) - '0';
-                    validTurn = currentGame.doTurn(this.playerTurn, x, y);
-                    nextActive = coordsToIndex(this.size, x, y);
-                }
-            }
-
-            x = currentActive % this.size;
-            y = currentActive / this.size;
-            //Joever check
-            if(currentGame.checkFull()){
-                currentGame.setJoever(true);
-                this.availableGames.remove(currentActive);
-                if(!currentGame.checkWinner()){
-                    int higherOcc = currentGame.getHigherOccupancy();
-                    currentGame.setWinner(higherOcc);
-                    currentGame.fillBoard(higherOcc);
-                    bgBoard.doTurn(playerTurn, x, y);
-                }
-            }
-
-            //Joever check
-            if(currentGame.checkWinner()){
-                currentGame.setWinner(playerTurn);
-                currentGame.fillBoard(playerTurn);
-                currentGame.setJoever(true);
-                bgBoard.doTurn(playerTurn, x, y);
-                this.availableGames.remove(currentActive);
-            }
-
-            if(this.board[nextActive].isJoever() && (!this.availableGames.isEmpty())){
-                System.out.println("Game " + intToCoords(nextActive) + " is already over.\n" +
-                        "You can choose one of the available games left.");
-                for(int i : this.availableGames){
-                    System.out.print(intToCoords(i) + " ");
-                }
-                boolean validInput = false;
-                while(!validInput){
-                    String input = scanner.nextLine();
-                    if(validateNumbers(input)){
-                        x = input.charAt(0) - '0';
-                        y = input.charAt(1) - '0';
-                        int choice = coordsToIndex(this.size, x, y);
-                        validInput = this.availableGames.contains(choice);
-                        nextActive = choice;
-                    }
-                }
-            }
-
+        printInstructions();
+        printGame();
+        while(running){
+            TicTacToe currentGame = board[currentActive];
+            handleSubgameMove(currentGame, scanner);
+            handleSubgameOver(currentGame);
+            handleNextGameFull(scanner);
             currentActive = nextActive;
-            this.printGame();
+            printGame();
+            checkFullGameWinner();
+            playerTurn ^= 1;
+        }
+        scanner.close();
+    }
 
-            //Full game check
-            if(bgBoard.checkWinner()){
-                System.out.printf("Player %c won Super Tic-Tac-Toe!\n", SYMBOLS[playerTurn+1]);
-                playing = false;
+    private void printInstructions(){
+        System.out.println("Welcome to Super Tic-Tac-Toe! To make a move, type in the X and Y coordinates back to back.");
+        System.out.println("The origin is in the top-left corner. So for example type '00' to place in the top-left corner");
+        System.out.println("or '12' for the second field in the third row.");
+        System.out.println("The game starts on the highlighted field " + intToCoords(currentActive));
+    }
+
+    private void handleSubgameMove(TicTacToe currentGame, Scanner scanner){
+        boolean validTurn = false;
+        int x, y;
+        while(!validTurn) {
+            System.out.printf("Player %c's turn on board %s\n", SYMBOLS[playerTurn + 1],
+                    intToCoords(currentActive));
+            String input = scanner.nextLine();
+            if(validateNumbers(input)){
+                x = input.charAt(0) - '0';
+                y = input.charAt(1) - '0';
+                validTurn = currentGame.doTurn(playerTurn, x, y);
+                nextActive = coordsToIndex(size, x, y);
             }
-
-            if(bgBoard.checkFull()){
-                if(!bgBoard.checkWinner()){
-                    System.out.println("Tie!");
-                    playing = false;
-                }
-            }
-            this.playerTurn ^= 1;
-
         }
     }
 
-    public void printGame(){
-        for(int r = 0; r < this.fieldSize; r += size){
+    private void handleSubgameOver(TicTacToe currentGame){
+        int x = currentActive % size;
+        int y = currentActive / size;
+        //Joever check
+        if(currentGame.checkFull()){
+            currentGame.setJoever(true);
+            availableGames.remove(currentActive);
+            if(!currentGame.checkWinner()){
+                int higherOcc = currentGame.getHigherOccupancy();
+                currentGame.setWinner(higherOcc);
+                currentGame.fillBoard(higherOcc);
+                bgBoard.doTurn(playerTurn, x, y);
+            }
+        }
+
+        //Joever check
+        if(currentGame.checkWinner()){
+            currentGame.setWinner(playerTurn);
+            currentGame.fillBoard(playerTurn);
+            currentGame.setJoever(true);
+            bgBoard.doTurn(playerTurn, x, y);
+            availableGames.remove(currentActive);
+        }
+    }
+
+    private void handleNextGameFull(Scanner scanner){
+        if(board[nextActive].isJoever() && (!availableGames.isEmpty())){
+            System.out.println("Game " + intToCoords(nextActive) + " is already over.\n" +
+                    "You can choose one of the available games left.");
+            for(int i : availableGames){
+                System.out.print(intToCoords(i) + " ");
+            }
+            boolean validInput = false;
+            while(!validInput){
+                String input = scanner.nextLine();
+                if(validateNumbers(input)){
+                    int x = input.charAt(0) - '0';
+                    int y = input.charAt(1) - '0';
+                    int choice = coordsToIndex(size, x, y);
+                    validInput = availableGames.contains(choice);
+                    nextActive = choice;
+                }
+            }
+        }
+    }
+
+    private void checkFullGameWinner(){
+        if(bgBoard.checkWinner()){
+            System.out.printf("Player %c won Super Tic-Tac-Toe!\n", SYMBOLS[playerTurn+1]);
+            running = false;
+        }
+
+        if(bgBoard.checkFull()){
+            if(!bgBoard.checkWinner()){
+                System.out.println("Tie!");
+                running = false;
+            }
+        }
+    }
+
+    private void printGame(){
+        for(int r = 0; r < fieldSize; r += size){
             for(int j = 0; j < size; j++){
                 for(int i = r; i < r + size; i++){
-                    TicTacToe currentBoard = this.board[i];
+                    TicTacToe currentBoard = board[i];
                     boolean highlighted = (i == currentActive);
 
                     if(highlighted){
@@ -171,8 +194,8 @@ public class SuperTicTacToe {
     }
 
     private String intToCoords(int c){
-        int x = c % this.size;
-        int y = c / this.size;
+        int x = c % size;
+        int y = c / size;
 
         return String.format("(%d/%d)", x, y);
     }
