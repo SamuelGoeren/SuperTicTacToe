@@ -20,17 +20,17 @@ public class TicTacToe {
 
     public TicTacToe(int size){
         this.size = size;
-        this.fieldSize = size * size;
-        this.playerTurn = (int) Math.round(Math.random());
-        this.joever = false;
-        this.initBoard(fieldSize);
+        fieldSize = size * size;
+        playerTurn = (int) Math.round(Math.random());
+        joever = false;
+        initBoard(fieldSize);
     }
 
     private void initBoard(int fieldSize){
-        this.board = new int[fieldSize];
+        board = new int[fieldSize];
 
         for(int x = 0; x < fieldSize; x++){
-            this.board[x] = -1;
+            board[x] = -1;
         }
 
     }
@@ -38,9 +38,9 @@ public class TicTacToe {
     protected int getHigherOccupancy(){
         int x = 0;
         int o = 0;
-        for(int i = 0; i < this.fieldSize; i++){
-            if(this.board[i] == 0) x++;
-            if(this.board[i] == 1) o++;
+        for(int i = 0; i < fieldSize; i++){
+            if(board[i] == 0) x++;
+            if(board[i] == 1) o++;
         }
 
         if(x > o) return 0;
@@ -54,14 +54,14 @@ public class TicTacToe {
             return false;
         }
 
-        if((x >= this.size) || (y >= this.size)){
+        if((x >= size) || (y >= size)){
             return false;
         }
 
         int index = y * size + x;
 
-        if(this.board[index] < 0){
-            this.board[index] = playerTurn;
+        if(board[index] < 0){
+            board[index] = playerTurn;
             return true;
         }
 
@@ -70,7 +70,7 @@ public class TicTacToe {
 
     protected boolean checkFull(){
         for(int i = 0; i < fieldSize; i++){
-            if(this.board[i] < 0) return false;
+            if(board[i] < 0) return false;
         }
 
         return true;
@@ -83,10 +83,10 @@ public class TicTacToe {
     private boolean checkDiagonals(){
         //top left to down right
         boolean hasWinner = true;
-        if(this.board[0] >= 0) {
-            int player = this.board[0];
+        if(board[0] >= 0) {
+            int player = board[0];
             for (int i = size + 1; i < fieldSize; i += size + 1) {
-                if(this.board[i] != player){
+                if(board[i] != player){
                     hasWinner = false;
                     break;
                 }
@@ -94,12 +94,12 @@ public class TicTacToe {
             if(hasWinner) return true;
         }
 
-
+        //top right to down left
         hasWinner = true;
-        if(this.board[size-1] >= 0){
-            int player = this.board[size-1];
+        if(board[size-1] >= 0){
+            int player = board[size-1];
             for(int i = 2 * (size-1); i < fieldSize - 1; i += size - 1){
-                if(this.board[i] != player){
+                if(board[i] != player){
                     hasWinner = false;
                     break;
                 }
@@ -113,10 +113,10 @@ public class TicTacToe {
     private boolean checkColumns(){
         for(int c = 0; c < size; c++){
             boolean hasWinner = true;
-            if(this.board[c] >= 0){
-                int player = this.board[c];
+            if(board[c] >= 0){
+                int player = board[c];
                 for(int i = 1; i < size; i++){
-                    if(this.board[c + i * size] != player){
+                    if(board[c + i * size] != player){
                         hasWinner = false;
                         break;
                     }
@@ -128,12 +128,12 @@ public class TicTacToe {
     }
 
     private boolean checkRows(){
-        for(int row = 0; row < this.fieldSize; row += size){
+        for(int row = 0; row < fieldSize; row += size){
             boolean hasWinner = true;
-            if(this.board[row] >= 0){
-                int player = this.board[row];
+            if(board[row] >= 0){
+                int player = board[row];
                 for(int i = 1; i < size; i++){
-                    if(this.board[row+i] != player){
+                    if(board[row+i] != player){
                         hasWinner = false;
                         break;
                     }
@@ -146,14 +146,14 @@ public class TicTacToe {
     }
 
     protected String rowToString(int row){
-        if((row < 0) || (row >= this.size)){
+        if((row < 0) || (row >= size)){
             throw new IllegalArgumentException("This row doesn't exist.");
         }
 
         StringBuilder sb = new StringBuilder();
-        int start = row * this.size;
+        int start = row * size;
         for(int i = start; i < start + size; i++){
-            int occ = this.board[i];
+            int occ = board[i];
 
             char symbol = SYMBOLS[occ + 1];
             sb.append(symbol).append("  ");
@@ -163,8 +163,8 @@ public class TicTacToe {
     }
 
     public void fillBoard(int p){
-        for(int i = 0; i < this.fieldSize; i++){
-            this.board[i] = p;
+        for(int i = 0; i < fieldSize; i++){
+            board[i] = p;
         }
     }
 
@@ -172,7 +172,7 @@ public class TicTacToe {
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        for(int i = 0; i < this.size; i++){
+        for(int i = 0; i < size; i++){
             sb.append(rowToString(i));
             sb.append("\n");
         }
@@ -200,7 +200,7 @@ public class TicTacToe {
         boolean playing = true;
         Scanner scanner = new Scanner(System.in);
         System.out.println("Type in coordinates back to back (e.g. 00 for top-left corner)");
-        this.printGame();
+        printGame();
         while(playing) {
             boolean validTurn = false;
             while(!validTurn) {
